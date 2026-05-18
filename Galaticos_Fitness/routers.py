@@ -1,196 +1,102 @@
-from flask import render_template, request
-from app import app, mysql  # Importa o app e a conexão do arquivo principal
+from flask import request, jsonify
+from app import app, mysql
 
-#listando os usuarios
+#crud usuarios
 @app.route('/usuarios', methods=['GET'])
 def listar_usuarios():
     cursor = mysql.connection.cursor()
     cursor.execute('SELECT * FROM usuarios')
-    usuarios = []
+    return jsonify([{'id': i[0], 'nome': i[1], 'meta': i[2]} for i in cursor.fetchall()])
 
-    for item in cursor.fetchall():
-        usuarios.append({
-            'id': item[0],
-            'nome': item[1],
-            'cidade': item[2]
-        })
-
-    return jsonify(usuarios)
-
-#cadastrar usuarios
 @app.route('/usuarios', methods=['POST'])
 def cadastrar_usuario():
-    dados = request.json
-
-    nome = dados['nome']
-    cidade = dados['cidade']
-
+    d = request.json
     cursor = mysql.connection.cursor()
-
-    cursor.execute('insert into usuarios(nome, cidade) values(%s, %s)', (nome, cidade))
-
+    cursor.execute('INSERT INTO usuarios(nome, meta_treinos_semana) VALUES(%s, %s)', (d['nome'], d['meta']))
     mysql.connection.commit()
+    return jsonify({'msg': 'Sucesso'})
 
-    return jsonify({'mensagem': 'Usuário cadastrado com sucesso!'})
-
-#atualizar
 @app.route('/usuarios/<int:id>', methods=['PUT'])
 def atualizar_usuario(id):
-    dados = request.json
-
-    nome = dados['nome']
-    cidade = dados['cidade']
-
+    d = request.json
     cursor = mysql.connection.cursor()
-
-    cursor.execute('update usuarios set nome = %s, cidade = %s where id = %s', (nome, cidade, id))
-
+    cursor.execute('UPDATE usuarios SET nome=%s, meta_treinos_semana=%s WHERE id=%s', (d['nome'], d['meta'], id))
     mysql.connection.commit()
+    return jsonify({'msg': 'Atualizado'})
 
-    return jsonify({'mensagem': 'Usuário atualizado com sucesso'})
-
-#deletar 
 @app.route('/usuarios/<int:id>', methods=['DELETE'])
 def deletar_usuario(id):
     cursor = mysql.connection.cursor()
-
-    cursor.execute('delete from usuarios where id = %s', (id,))
-
+    cursor.execute('DELETE FROM usuarios WHERE id = %s', (id,))
     mysql.connection.commit()
+    return jsonify({'msg': 'Removido'})
 
-    return jsonify({'mensagem': 'Usuário deletado com sucesso'})
-
-
-# ===================== treinos
-
-#listando treinos
+#crud treinos
 @app.route('/treinos', methods=['GET'])
 def listar_treinos():
     cursor = mysql.connection.cursor()
-    cursor.execute('select * from treinos')
+    cursor.execute('SELECT * FROM treinos')
+    return jsonify([{'id': i[0], 'usuario_id': i[1], 'nome': i[2], 'foco': i[3]} for i in cursor.fetchall()])
 
-    treinos = []
-
-    for item in cursor.fetchall():
-        treinos.append({
-            'id': item[0],
-            'nome': item[1],
-            'exercicio': item[2],
-            'duracao': item[3]
-        })
-
-    return jsonify(treinos)
-
-#cadastrando treinos
 @app.route('/treinos', methods=['POST'])
 def cadastrar_treino():
-    dados = request.json
-
-    nome = dados['nome']
-    exercicio = dados['exercicio']
-    duracao = dados['duracao']
-
+    d = request.json
     cursor = mysql.connection.cursor()
-
-    cursor.execute('insert into treinos(nome, exercicio, duracao) values(%s, %s, %s)', (nome, exercicio, duracao))
-
+    cursor.execute('INSERT INTO treinos(usuario_id, nome_treino, foco) VALUES(%s, %s, %s)', (d['usuario_id'], d['nome'], d['foco']))
     mysql.connection.commit()
+    return jsonify({'msg': 'Sucesso'})
 
-    return jsonify({'mensagem': 'Treino cadastrado com sucesso'})
-
-#atualizando treinos
 @app.route('/treinos/<int:id>', methods=['PUT'])
 def atualizar_treino(id):
-    dados = request.json
-
-    nome = dados['nome']
-    exercicio = dados['exercicio']
-    duracao = dados['duracao']
-
+    d = request.json
     cursor = mysql.connection.cursor()
-
-    cursor.execute('update treinos set nome = %s, exercicio = %s, duracao = %s where id = %s', (nome, exercicio, duracao, id))
-
+    cursor.execute('UPDATE treinos SET nome_treino=%s, foco=%s WHERE id=%s', (d['nome'], d['foco'], id))
     mysql.connection.commit()
+    return jsonify({'msg': 'Atualizado'})
 
-    return jsonify({'mensagem': 'Treino atualizado com sucesso'})
-
-#deletando treinos
 @app.route('/treinos/<int:id>', methods=['DELETE'])
 def deletar_treino(id):
     cursor = mysql.connection.cursor()
-
-    cursor.execute('delete from treinos where id = %s', (id,))
-
+    cursor.execute('DELETE FROM treinos WHERE id = %s', (id,))
     mysql.connection.commit()
+    return jsonify({'msg': 'Removido'})
 
-    return jsonify({'mensagem': 'Treino deletado com sucesso'})
-
-# ====================== exercicios
+#crud exercicios
 @app.route('/exercicios', methods=['GET'])
 def listar_exercicios():
     cursor = mysql.connection.cursor()
-    cursor.execute('select * from exercicios')
+    cursor.execute('SELECT * FROM exercicios')
+    return jsonify([{'id': i[0], 'treino_id': i[1], 'nome': i[2], 'series': i[3], 'reps': i[4]} for i in cursor.fetchall()])
 
-    exercicios = []
-
-    for item in cursor.fetchall():
-        exercicios.append({
-            'id': item[0],
-            'nome': item[1],
-            'descricao': item[2]
-        })
-
-    return jsonify(exercicios)
-
-#cadastrando exercicios
 @app.route('/exercicios', methods=['POST'])
 def cadastrar_exercicio():
-    dados = request.json
+    d = request.json
+    cursor = mysql.connection.cursor()
+    cursor.execute('INSERT INTO exercicios(treino_id, nome, series, repeticoes) VALUES(%s, %s, %s, %s)', (d['treino_id'], d['nome'], d['series'], d['reps']))
+    mysql.connection.commit()
+    return jsonify({'msg': 'Sucesso'})
 
+@app.route('/exercicios/<int:id>', methods=['PUT'])
+def atualizar_exercicio(id):
+    dados = request.json
+    
     nome = dados['nome']
-    descricao = dados['descricao']
-
+    series = dados['series']
+    repeticoes = dados['reps']
+    
     cursor = mysql.connection.cursor()
-
-    cursor.execute('insert into exercicios(nome, descricao) values(%s, %s)', (nome, descricao))
-
+    cursor.execute('''
+        UPDATE exercicios 
+        SET nome = %s, series = %s, repeticoes = %s 
+        WHERE id = %s
+    ''', (nome, series, repeticoes, id))
+    
     mysql.connection.commit()
+    return jsonify({'mensagem': 'Exercício atualizado com sucesso!'})
 
-    return jsonify({'mensagem': 'Exercício cadastrado com sucesso'})
-    id_time_casa = dados['id_time_casa']
-    id_time_visitante = dados['id_time_visitante']
-    placar_casa = dados['placar_casa']
-    placar_visitante = dados['placar_visitante']
-
+@app.route('/exercicios/<int:id>', methods=['DELETE'])
+def deletar_exercicio(id):
     cursor = mysql.connection.cursor()
-    cursor.execute('insert into partidas(data, id_time_casa, id_time_visitante, placar_casa, placar_visitante) values(%s, %s, %s, %s, %s)', (data, id_time_casa, id_time_visitante, placar_casa, placar_visitante))
+    cursor.execute('DELETE FROM exercicios WHERE id = %s', (id,))
     mysql.connection.commit()
-    return jsonify({'mensagem': 'Partida cadastrada com sucesso'})
-
-#atualizando partidas 
-@app.route('/partidas/<int:id>', methods=['PUT'])
-def atualizar_partida(id):
-    dados = request.json
-
-    data = dados['data']
-    id_time_casa = dados['id_time_casa']
-    id_time_visitante = dados['id_time_visitante']
-    placar_casa = dados['placar_casa']
-    placar_visitante = dados['placar_visitante']
-
-    cursor = mysql.connection.cursor()
-    cursor.execute('update partidas set data = %s, id_time_casa = %s, id_time_visitante = %s, placar_casa = %s, placar_visitante = %s where id = %s', (data, id_time_casa, id_time_visitante, placar_casa, placar_visitante, id))
-    mysql.connection.commit()
-    return jsonify({'mensagem': 'Partida atualizada com sucesso'})
-
-#deletando partidas 
-@app.route('/partidas/<int:id>', methods=['DELETE'])
-def deletar_partida(id):
-    cursor = mysql.connection.cursor()
-    cursor.execute('delete from partidas where id = %s', (id))
-    mysql.connection.commit()
-    return jsonify({'mensagem': 'Partida deletada com sucesso'})
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    return jsonify({'msg': 'Removido'})
