@@ -14,7 +14,7 @@ def cadastrar_usuario():
     cursor = mysql.connection.cursor()
     cursor.execute('INSERT INTO usuarios(nome, meta_treinos_semana) VALUES(%s, %s)', (d['nome'], d['meta']))
     mysql.connection.commit()
-    return jsonify({'msg': 'Sucesso'})
+    return jsonify({'mensagem': 'Usuário cadastrado com sucesso!'})
 
 @app.route('/usuarios/<int:id>', methods=['PUT'])
 def atualizar_usuario(id):
@@ -22,14 +22,14 @@ def atualizar_usuario(id):
     cursor = mysql.connection.cursor()
     cursor.execute('UPDATE usuarios SET nome=%s, meta_treinos_semana=%s WHERE id=%s', (d['nome'], d['meta'], id))
     mysql.connection.commit()
-    return jsonify({'msg': 'Atualizado'})
+    return jsonify({'mensagem': 'Usuário atualizado com sucesso!'})
 
 @app.route('/usuarios/<int:id>', methods=['DELETE'])
 def deletar_usuario(id):
     cursor = mysql.connection.cursor()
     cursor.execute('DELETE FROM usuarios WHERE id = %s', (id,))
     mysql.connection.commit()
-    return jsonify({'msg': 'Removido'})
+    return jsonify({'mensagem': 'Usuário removido com sucesso!'})
 
 #crud treinos
 @app.route('/treinos', methods=['GET'])
@@ -44,7 +44,7 @@ def cadastrar_treino():
     cursor = mysql.connection.cursor()
     cursor.execute('INSERT INTO treinos(usuario_id, nome_treino, foco) VALUES(%s, %s, %s)', (d['usuario_id'], d['nome'], d['foco']))
     mysql.connection.commit()
-    return jsonify({'msg': 'Sucesso'})
+    return jsonify({'mensagem': 'Treino cadastrado com sucesso!'})
 
 @app.route('/treinos/<int:id>', methods=['PUT'])
 def atualizar_treino(id):
@@ -52,14 +52,14 @@ def atualizar_treino(id):
     cursor = mysql.connection.cursor()
     cursor.execute('UPDATE treinos SET nome_treino=%s, foco=%s WHERE id=%s', (d['nome'], d['foco'], id))
     mysql.connection.commit()
-    return jsonify({'msg': 'Atualizado'})
+    return jsonify({'mensagem': 'Treino atualizado com sucesso!'})
 
 @app.route('/treinos/<int:id>', methods=['DELETE'])
 def deletar_treino(id):
     cursor = mysql.connection.cursor()
     cursor.execute('DELETE FROM treinos WHERE id = %s', (id,))
     mysql.connection.commit()
-    return jsonify({'msg': 'Removido'})
+    return jsonify({'mensagem': 'Treino removido com sucesso!'})
 
 #crud exercicios
 @app.route('/exercicios', methods=['GET'])
@@ -74,7 +74,7 @@ def cadastrar_exercicio():
     cursor = mysql.connection.cursor()
     cursor.execute('INSERT INTO exercicios(treino_id, nome, series, repeticoes) VALUES(%s, %s, %s, %s)', (d['treino_id'], d['nome'], d['series'], d['reps']))
     mysql.connection.commit()
-    return jsonify({'msg': 'Sucesso'})
+    return jsonify({'mensagem': 'Exercício cadastrado com sucesso!'})
 
 @app.route('/exercicios/<int:id>', methods=['PUT'])
 def atualizar_exercicio(id):
@@ -99,4 +99,4 @@ def deletar_exercicio(id):
     cursor = mysql.connection.cursor()
     cursor.execute('DELETE FROM exercicios WHERE id = %s', (id,))
     mysql.connection.commit()
-    return jsonify({'msg': 'Removido'})
+    return jsonify({'mensagem': 'Exercício removido com sucesso!'})
