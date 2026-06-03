@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              //cabeçalho
+              // 1. Cabeçalho
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.only(
@@ -68,11 +68,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               'Olá, Fulano!',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 2,
+                                fontSize:
+                                    26, // Ajustado de 2 para 26 para ficar visível
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Text('', style: TextStyle(fontSize: 24)),
+                            Text(' 💪', style: TextStyle(fontSize: 24)),
                           ],
                         ),
                         const SizedBox(height: 8),
@@ -90,57 +91,61 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
+
               const SizedBox(height: 20),
-              // seu progresso
+
+              // 2. Seção: Seu Progresso
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
                   'Seu progresso',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.black,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+              ),
 
-                const SizedBox(height: 12),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    children: [
-                      // <-- O 'const' saiu daqui para não dar erro com as cores
-                      const Expanded(
-                        child: ProgressCard(
-                          icon: Icons.local_fire_department_rounded,
-                          value: '12',
-                          label: 'Treinos\nconcluídos',
-                          iconColor: Colors.amber,
-                        ),
+              const SizedBox(height: 12),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    const Expanded(
+                      child: ProgressCard(
+                        icon: Icons.local_fire_department_rounded,
+                        value: '12',
+                        label: 'Treinos\nconcluídos',
+                        iconColor: Colors.amber,
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: ProgressCard(
-                          icon: Icons.calendar_month_rounded,
-                          value: '5',
-                          label: 'Dias\nseguidos',
-                          iconColor: Colors.grey,
-                        ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ProgressCard(
+                        icon: Icons.calendar_month_rounded,
+                        value: '5',
+                        label: 'Dias\nseguidos',
+                        iconColor: Colors.grey,
                       ),
-                      const SizedBox(width: 10),
-                      const Expanded(
-                        child: ProgressCard(
-                          icon: Icons.emoji_events_rounded,
-                          value: '1',
-                          label: 'Meta\nsemanal',
-                          iconColor: Colors.amber,
-                        ),
+                    ),
+                    const SizedBox(width: 10),
+                    const Expanded(
+                      child: ProgressCard(
+                        icon: Icons.emoji_events_rounded,
+                        value: '1',
+                        label: 'Meta\nsemanal',
+                        iconColor: Colors.amber,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
+
               const SizedBox(height: 25),
-              // proximo treino
+
+              // 3. Seção: Próximo Treino
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
@@ -152,7 +157,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
+
               const SizedBox(height: 12),
+
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Container(
@@ -185,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(width: 16),
                       Expanded(
                         child: Column(
-                          crossAxisAlignment: CrossAxistAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: const [
                             Text(
                               'Peito e Tríceps',
@@ -228,7 +235,24 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
+
               const SizedBox(height: 25),
+
+              // 4. Seção: Últimos Treinos
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  'Últimos treinos',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
@@ -247,15 +271,165 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(height: 10),
                     PastWorkoutTile(
                       title: 'Peito',
-                      date: '04/05/204',
+                      date: '04/05/2024',
                       icon: Icons.sports_martial_arts_rounded,
                     ),
                   ],
                 ),
               ),
+              const SizedBox(height: 30),
             ],
           ),
         ),
+      ),
+
+      // 5. Barra de Navegação Inferior
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: const Color(0xFFFFC107),
+        unselectedItemColor: Colors.grey,
+        showUnselectedLabels: true,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_filled),
+            label: 'Inicio',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.fitness_center_rounded),
+            label: 'Treinos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_box_outlined),
+            label: 'Exercícios',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline_rounded),
+            label: 'Perfil',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Widget para os cards de progresso
+class ProgressCard extends StatelessWidget {
+  final IconData icon;
+  final String value;
+  final String label;
+  final Color iconColor;
+
+  const ProgressCard({
+    super.key,
+    required this.icon,
+    required this.value,
+    required this.label,
+    required this.iconColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: iconColor, size: 24),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Widget auxiliar para a lista de últimos treinos concluídos
+class PastWorkoutTile extends StatelessWidget {
+  final String title;
+  final String date;
+  final IconData icon;
+
+  const PastWorkoutTile({
+    super.key,
+    required this.title,
+    required this.date,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: Colors.grey[100],
+            radius: 22,
+            child: Icon(icon, color: Colors.black54, size: 22),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  date,
+                  style: const TextStyle(color: Colors.grey, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+          const Icon(Icons.check_circle, color: Colors.green, size: 24),
+        ],
       ),
     );
   }
