@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'treinos.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,20 +17,31 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFFF8F9FA),
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      home: const Home(),
     );
   }
 }
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class Home extends StatefulWidget {
+  const Home({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<Home> createState() => _HomeState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeState extends State<Home> {
   int _currentIndex = 0;
+
+  final List<Widget> _screens = [
+    const Home(), // Sua primeira tela (página inicial)
+    const Treinos(), // Sua segunda tela (vinda do outro arquivo)
+    const Center(
+      child: Text('Exercícios', style: TextStyle(color: Colors.white)),
+    ),
+    const Center(
+      child: Text('Perfil', style: TextStyle(color: Colors.white)),
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
