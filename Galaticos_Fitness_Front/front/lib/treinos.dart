@@ -1,20 +1,29 @@
+// OBJETO DE ESTUDO: LIB/TREINOS.DART
 import 'package:flutter/material.dart';
+import 'exercicios.dart'; // Importa a tela de exercícios para navegação
 
 class Treinos extends StatelessWidget {
   const Treinos({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // DefaultTabController é OBRIGATÓRIO para fazer as abas funcionarem
     return DefaultTabController(
-      length: 2,
+      length: 2, // Quantidade de abas (Meus treinos e Todos os treinos)
       child: Scaffold(
+        backgroundColor: const Color(0xFFF8F9FA), // Mantém o fundo claro padrão
+        // Botão Flutuante Amarelo de "+" no canto inferior
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            // Ação futura para adicionar treino
+          },
           backgroundColor: const Color(0xFFFFC107),
           child: const Icon(Icons.add, color: Colors.black, size: 30),
         ),
+
         body: Column(
           children: [
+            // 1. Cabeçalho Escuro da Tela de Treinos
             Container(
               width: double.infinity,
               padding: const EdgeInsets.only(top: 60, bottom: 0),
@@ -34,49 +43,55 @@ class Treinos extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  // barra de abas(tabs)
+
+                  // Configuração visual das Abas
                   const TabBar(
-                    indicatorColor: Color(0xFFFFC107),
-                    labelColor: Color(0xFFFFC107),
-                    unselectedLabelColor: Colors.white,
+                    indicatorColor: Color(
+                      0xFFFFC107,
+                    ), // Linha amarela embaixo da aba ativa
+                    labelColor: Color(0xFFFFC107), // Texto amarelo na aba ativa
+                    unselectedLabelColor:
+                        Colors.grey, // Texto cinza na aba inativa
                     labelStyle: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
                     tabs: [
-                      Tab(text: 'Meus Treinos'),
+                      Tab(text: 'Meus treinos'),
                       Tab(text: 'Todos os treinos'),
                     ],
                   ),
                 ],
               ),
             ),
-            // 'conteúdo' das abas
+
+            // 2. Conteúdo que muda ao clicar nas Abas
             Expanded(
               child: TabBarView(
                 children: [
-                  // conteúdo da aba 'Meus Treinos'
+                  // Conteúdo da Primeira Aba: "Meus treinos"
                   ListView(
                     padding: const EdgeInsets.all(20),
-                    children: [
+                    children: const [
                       WorkoutCard(
-                        title: 'Peito e triceps',
-                        exercises: '6 exercicios',
+                        title: 'Peito e Tríceps',
+                        exercises: '6 exercícios',
                       ),
                       WorkoutCard(
-                        title: 'Costa e Bíceps',
-                        exercises: '6 exercicios',
+                        title: 'Costas e Bíceps',
+                        exercises: '6 exercícios',
                       ),
-                      WorkoutCard(title: 'Pernas', exercises: '7 exercicios'),
-                      WorkoutCard(title: 'Ombros', exercises: '4 exercicios'),
-                      WorkoutCard(title: 'Abdômen', exercises: '4 exercicios'),
+                      WorkoutCard(title: 'Pernas', exercises: '7 exercícios'),
+                      WorkoutCard(title: 'Ombros', exercises: '4 exercícios'),
+                      WorkoutCard(title: 'Abdômen', exercises: '4 exercícios'),
                     ],
                   ),
-                  // conteúdo da aba 'Todos os treinos'
+
+                  // Conteúdo da Segunda Aba: "Todos os treinos"
                   const Center(
                     child: Text(
-                      'Novos treinos em breve',
-                      style: TextStyle(color: Colors.grey),
+                      'Em breve novos treinos!',
+                      style: TextStyle(color: Colors.grey, fontSize: 16),
                     ),
                   ),
                 ],
@@ -89,7 +104,7 @@ class Treinos extends StatelessWidget {
   }
 }
 
-// widget para os cards da lista de treinos
+// Widget customizado para renderizar cada linha de treino da lista
 class WorkoutCard extends StatelessWidget {
   final String title;
   final String exercises;
@@ -138,7 +153,16 @@ class WorkoutCard extends StatelessWidget {
           style: const TextStyle(color: Colors.grey, fontSize: 14),
         ),
         trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Exercicios(
+                titulo: title,
+              ), // 'title' é o nome do treino clicado
+            ),
+          );
+        },
       ),
     );
   }
