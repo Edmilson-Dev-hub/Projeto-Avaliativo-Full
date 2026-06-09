@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'treinos.dart'; // Mantive o import do seu arquivo separado
 import 'exercicios.dart'; // Mantive o import do seu arquivo separado
+import 'perfil.dart';
 
 void main() {
   runApp(const MyApp());
@@ -44,13 +45,7 @@ class _HomeState extends State<Home> {
         style: TextStyle(color: Colors.black, fontSize: 24),
       ),
     ),
-
-    const Center(
-      child: Text(
-        'Perfil',
-        style: TextStyle(color: Colors.black, fontSize: 24),
-      ),
-    ),
+    const Perfil(),
   ];
   @override
   Widget build(BuildContext context) {
