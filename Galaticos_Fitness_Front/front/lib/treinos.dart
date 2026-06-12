@@ -1,98 +1,165 @@
-// OBJETO DE ESTUDO: LIB/TREINOS.DART
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'exercicios.dart'; // Importa a tela de exercícios para navegação
+import 'package:http/http.dart' as http;
+import 'api_service.dart';
+import 'exercicios.dart';
 
-class Treinos extends StatelessWidget {
+class Treinos extends StatefulWidget {
   const Treinos({super.key});
 
   @override
+  State<Treinos> createState() => _TreinosState();
+}
+
+class _TreinosState extends State<Treinos> {
+  List<dynamic> _meusTreinos = [];
+  bool _carregando = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _buscarTreinosDoBanco();
+  }
+
+  Future<void> _buscarTreinosDoBanco() async {
+    setState(() => _carregando = true);
+    try {
+      final idUsuario = ApiService.usuarioId ?? 1;
+      final response = await http.get(
+        Uri.parse('${ApiService.baseUrl}/treinos?usuario_id=$idUsuario'),
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _meusTreinos = jsonDecode(response.body);
+          _carregando = false;
+        });
+      }
+    } catch (e) {
+      print('Erro ao buscar treinos: $e');
+      setState(() => _carregando = false);
+    }
+  }
+
+  Future<void> _cadastrarNovoTreino(String nome, String foco) async {
+    try {
+      final response = await http.post(
+        Uri.parse('${ApiService.baseUrl}/treinos'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'usuario_id': ApiService.usuarioId ?? 1,
+          'nome': nome,
+          'foco': foco,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Treino criado com sucesso!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        _buscarTreinosDoBanco();
+      }
+    } catch (e) {
+      print('Erro ao cadastrar treino: $e');
+    }
+  }
+
+  Future<void> _deletarTreino(int idTreino) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('${ApiService.baseUrl}/treinos/$idTreino'),
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Treino removido!'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+        _buscarTreinosDoBanco();
+      }
+    } catch (e) {
+      print('Erro ao deletar treino: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // DefaultTabController é OBRIGATÓRIO para fazer as abas funcionarem
     return DefaultTabController(
-      length: 2, // Quantidade de abas (Meus treinos e Todos os treinos)
+      length: 2,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8F9FA), // Mantém o fundo claro padrão
-        // Botão Flutuante Amarelo de "+" no canto inferior
+        backgroundColor: const Color(0xFFF8F9FA),
+        // cadastro de treino botao
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            // Ação futura para adicionar treino
-          },
           backgroundColor: const Color(0xFFFFC107),
-          child: const Icon(Icons.add, color: Colors.black, size: 30),
+          onPressed: () => _mostrarDialogoCadastro(),
+          child: const Icon(Icons.add, color: Colors.black),
         ),
 
         body: Column(
           children: [
-            // 1. Cabeçalho Escuro da Tela de Treinos
             Container(
               width: double.infinity,
               padding: const EdgeInsets.only(top: 60, bottom: 0),
               color: const Color(0xFF161616),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(
-                      'Treinos',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  const Text(
+                    'Treinos',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 20),
-
-                  // Configuração visual das Abas
+                  const SizedBox(height: 15),
                   const TabBar(
-                    indicatorColor: Color(
-                      0xFFFFC107,
-                    ), // Linha amarela embaixo da aba ativa
-                    labelColor: Color(0xFFFFC107), // Texto amarelo na aba ativa
-                    unselectedLabelColor:
-                        Colors.grey, // Texto cinza na aba inativa
-                    labelStyle: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                    tabs: [
-                      Tab(text: 'Meus treinos'),
-                      Tab(text: 'Todos os treinos'),
-                    ],
+                    indicatorColor: Color(0xFFFFC107),
+                    labelColor: Color(0xFFFFC107),
+                    unselectedLabelColor: Colors.grey,
+                    tabs: [Tab(text: 'Meus treinos')],
                   ),
                 ],
               ),
             ),
 
-            // 2. Conteúdo que muda ao clicar nas Abas
+            // Conteúdo das Abas
             Expanded(
               child: TabBarView(
                 children: [
-                  // Conteúdo da Primeira Aba: "Meus treinos"
-                  ListView(
-                    padding: const EdgeInsets.all(20),
-                    children: const [
-                      WorkoutCard(
-                        title: 'Peito e Tríceps',
-                        exercises: '6 exercícios',
-                      ),
-                      WorkoutCard(
-                        title: 'Costas e Bíceps',
-                        exercises: '6 exercícios',
-                      ),
-                      WorkoutCard(title: 'Pernas', exercises: '7 exercícios'),
-                      WorkoutCard(title: 'Ombros', exercises: '4 exercícios'),
-                      WorkoutCard(title: 'Abdômen', exercises: '4 exercícios'),
-                    ],
-                  ),
+                  _carregando
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Color(0xFFFFC107),
+                            ),
+                          ),
+                        )
+                      : _meusTreinos.isEmpty
+                      ? const Center(
+                          child: Text(
+                            'Nenhum treino cadastrado. Toque no + para criar!',
+                          ),
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.all(15),
+                          itemCount: _meusTreinos.length,
+                          itemBuilder: (context, index) {
+                            final treino = _meusTreinos[index];
+                            return _buildWorkoutCard(
+                              id: treino['id'],
+                              title: treino['nome'] ?? 'Sem Nome',
+                              focus: treino['foco'] ?? 'Geral',
+                            );
+                          },
+                        ),
 
-                  // Conteúdo da Segunda Aba: "Todos os treinos"
                   const Center(
-                    child: Text(
-                      'Em breve novos treinos!',
-                      style: TextStyle(color: Colors.grey, fontSize: 16),
-                    ),
+                    child: Text('Novos treinos da comunidade em breve!'),
                   ),
                 ],
               ),
@@ -102,17 +169,13 @@ class Treinos extends StatelessWidget {
       ),
     );
   }
-}
 
-// Widget customizado para renderizar cada linha de treino da lista
-class WorkoutCard extends StatelessWidget {
-  final String title;
-  final String exercises;
-
-  const WorkoutCard({super.key, required this.title, required this.exercises});
-
-  @override
-  Widget build(BuildContext context) {
+  // auxiliar que desenha o Card do Treino com as ações do CRUD
+  Widget _buildWorkoutCard({
+    required int id,
+    required String title,
+    required String focus,
+  }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -121,8 +184,8 @@ class WorkoutCard extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -136,33 +199,104 @@ class WorkoutCard extends StatelessWidget {
           ),
           child: const Icon(
             Icons.fitness_center_rounded,
-            color: Colors.amber,
+            color: Color(0xFFFFC107),
             size: 24,
           ),
         ),
         title: Text(
           title,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-            color: Colors.black,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         subtitle: Text(
-          exercises,
-          style: const TextStyle(color: Colors.grey, fontSize: 14),
+          'Foco: $focus',
+          style: const TextStyle(color: Colors.grey, fontSize: 13),
         ),
-        trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+
+        // Botão de Deletar
+        trailing: IconButton(
+          icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+          onPressed: () => _deletarTreino(id),
+        ),
+
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => Exercicios(
-                titulo: title,
-              ), // 'title' é o nome do treino clicado
+              builder: (context) => Exercicios(titulo: title, treinoId: id),
             ),
           );
         },
+      ),
+    );
+  }
+
+  // Pop-up que captura os dados para criar o treino
+  void _mostrarDialogoCadastro() {
+    final TextEditingController nomeController = TextEditingController();
+    final TextEditingController focoController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF161616),
+        title: const Text('Novo Treino', style: TextStyle(color: Colors.white)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nomeController,
+              style: const TextStyle(color: Colors.white),
+              decoration: _buildInputDecoration(
+                'Nome do Treino (ex: Treino A)',
+              ),
+            ),
+            const SizedBox(height: 15),
+            TextField(
+              controller: focoController,
+              style: const TextStyle(color: Colors.white),
+              decoration: _buildInputDecoration(
+                'Foco do Treino (ex: Peito e Tríceps)',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFFFC107),
+            ),
+            onPressed: () {
+              if (nomeController.text.isNotEmpty &&
+                  focoController.text.isNotEmpty) {
+                _cadastrarNovoTreino(
+                  nomeController.text.trim(),
+                  focoController.text.trim(),
+                );
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('Salvar', style: TextStyle(color: Colors.black)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  InputDecoration _buildInputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(color: Colors.grey),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.grey),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Color(0xFFFFC107)),
       ),
     );
   }
