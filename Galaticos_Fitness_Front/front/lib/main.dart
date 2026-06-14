@@ -128,7 +128,7 @@ class _HomeContentState extends State<HomeContent> {
         if (mounted) {
           setState(() {
             _historicoReal = historico;
-            _treinoNomeTela = 'Crie um Treino';
+            _treinoNomeTela = 'Crie um Treino!';
             _treinoFocoTela = 'Vá na aba Treinos';
             _treinoIdTela = 1;
           });
