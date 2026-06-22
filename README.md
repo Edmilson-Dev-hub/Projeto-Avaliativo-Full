@@ -16,7 +16,7 @@ Aplicativo de gerenciamento de treinos desenvolvido como projeto acadêmico util
 
 A aplicação está disponível em:
 
-https://galaticosfitness.vercel.app
+https://galaticosfront.vercel.app/
 
 ## Observação
 
